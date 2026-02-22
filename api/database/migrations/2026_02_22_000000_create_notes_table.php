@@ -15,6 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('title')->nullable();
             $table->text('body')->nullable();
+            $table->boolean('is_favorite')->default(false);
+            $table->boolean('is_archived')->default(false);
             $table->timestamp('last_edited_at')->nullable();
             $table->timestamps();
         });

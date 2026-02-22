@@ -13,9 +13,11 @@ interface SidebarProps {
   selectedNoteId: string | null;
   onSelectNote: (id: string) => void;
   onNewNote: () => void;
+  currentFilter: "all" | "favorites" | "archive";
+  onFilterChange: (filter: "all" | "favorites" | "archive") => void;
 }
 
-export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote }: SidebarProps): JSX.Element {
+export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote, currentFilter, onFilterChange }: SidebarProps): JSX.Element {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -29,21 +31,32 @@ export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote }: Side
       </button>
 
       <nav className="menu-list">
-        <div className="ui-item menu-item active">
+        <div
+          className={`ui-item menu-item ${currentFilter === "all" ? "active" : ""}`}
+          onClick={() => onFilterChange("all")}
+        >
           <i className="ri-file-list-2-line"></i>
           <span>All Notes</span>
         </div>
-        <div className="ui-item menu-item">
+        <div
+          className={`ui-item menu-item ${currentFilter === "favorites" ? "active" : ""}`}
+          onClick={() => onFilterChange("favorites")}
+        >
           <i className="ri-heart-3-line"></i>
           <span>Favorites</span>
         </div>
-        <div className="ui-item menu-item">
+        <div
+          className={`ui-item menu-item ${currentFilter === "archive" ? "active" : ""}`}
+          onClick={() => onFilterChange("archive")}
+        >
           <i className="ri-archive-line"></i>
           <span>Archive</span>
         </div>
       </nav>
 
-      <div className="section-label">Recent</div>
+      <div className="section-label">
+        {currentFilter === "all" ? "Recent" : currentFilter === "favorites" ? "Favorites" : "Archived"}
+      </div>
 
       <NoteList
         notes={notes}

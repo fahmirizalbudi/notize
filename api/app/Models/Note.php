@@ -19,6 +19,8 @@ class Note extends Model
         'id',
         'title',
         'body',
+        'is_favorite',
+        'is_archived',
         'last_edited_at',
     ];
 
@@ -28,6 +30,8 @@ class Note extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'is_favorite' => 'boolean',
+        'is_archived' => 'boolean',
         'last_edited_at' => 'datetime',
     ];
 

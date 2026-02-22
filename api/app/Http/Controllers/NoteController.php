@@ -26,6 +26,8 @@ class NoteController extends Controller
             'id' => 'nullable|uuid',
             'title' => 'nullable|string',
             'body' => 'nullable|string',
+            'is_favorite' => 'nullable|boolean',
+            'is_archived' => 'nullable|boolean',
         ]);
 
         $note = Note::create($validated);
@@ -49,6 +51,8 @@ class NoteController extends Controller
         $validated = $request->validate([
             'title' => 'nullable|string',
             'body' => 'nullable|string',
+            'is_favorite' => 'nullable|boolean',
+            'is_archived' => 'nullable|boolean',
             'last_edited_at' => 'nullable|date',
         ]);
 
