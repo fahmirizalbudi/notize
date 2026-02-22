@@ -1,4 +1,5 @@
 import type { JSX } from "preact";
+import { useState, useEffect, useRef } from "preact/hooks";
 
 interface Note {
   id: string;
@@ -13,19 +14,136 @@ interface EditorProps {
   note: Note | null;
   onUpdateNote: (id: string, updates: Partial<Note>) => void;
   onDeleteNote?: (id: string) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  viewMode: "comfortable" | "compact";
+  onViewModeChange: () => void;
 }
 
-export function Editor({ note, onUpdateNote, onDeleteNote }: EditorProps): JSX.Element {
+export function Editor({ 
+  note, onUpdateNote, onDeleteNote, searchQuery, onSearchChange, viewMode, onViewModeChange 
+}: EditorProps): JSX.Element {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(!!searchQuery);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isSearchVisible && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchVisible]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  const toggleSearch = () => {
+    if (isSearchVisible) {
+      onSearchChange("");
+      setIsSearchVisible(false);
+    } else {
+      setIsSearchVisible(true);
+    }
+  };
+
+  const renderTopBar = () => (
+    <div className="top-bar">
+      <div className={`search-wrapper ${isSearchVisible ? "visible" : ""}`}>
+        <input
+          ref={searchInputRef}
+          type="text"
+          className="search-input"
+          placeholder="Search notes..."
+          value={searchQuery}
+          onInput={(e) => onSearchChange((e.target as HTMLInputElement).value)}
+        />
+      </div>
+      <button className="icon-btn" onClick={toggleSearch} title="Search">
+        <i className={isSearchVisible ? "ri-close-line" : "ri-search-2-line"}></i>
+      </button>
+      <button 
+        className="icon-btn" 
+        onClick={onViewModeChange} 
+        title={viewMode === "comfortable" ? "Switch to Compact View" : "Switch to Comfortable View"}
+      >
+        <i className={viewMode === "comfortable" ? "ri-layout-grid-line" : "ri-list-check"}></i>
+      </button>
+      
+      {note && (
+        <div className="dropdown-container" ref={dropdownRef}>
+          <button 
+            className="icon-btn" 
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            title="More Actions"
+          >
+            <i className="ri-more-fill"></i>
+          </button>
+
+          {isDropdownOpen && (
+            <div className="dropdown-menu">
+              <button 
+                className={`dropdown-item ${note.isFavorite ? "favorite-active" : ""}`}
+                onClick={() => {
+                  onUpdateNote(note.id, { isFavorite: !note.isFavorite });
+                  setIsDropdownOpen(false);
+                }}
+              >
+                <i className={note.isFavorite ? "ri-heart-3-fill" : "ri-heart-3-line"}></i>
+                <span>{note.isFavorite ? "Unfavorite" : "Favorite"}</span>
+              </button>
+
+              <button 
+                className="dropdown-item"
+                onClick={() => {
+                  onUpdateNote(note.id, { isArchived: !note.isArchived });
+                  setIsDropdownOpen(false);
+                }}
+              >
+                <i className={note.isArchived ? "ri-archive-fill" : "ri-archive-line"}></i>
+                <span>{note.isArchived ? "Unarchive" : "Archive"}</span>
+              </button>
+
+              {onDeleteNote && (
+                <button 
+                  className="dropdown-item danger"
+                  onClick={() => {
+                    onDeleteNote(note.id);
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  <i className="ri-delete-bin-line"></i>
+                  <span>Delete Permanently</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   if (!note) {
     return (
       <main className="main-content">
-        <div className="top-bar">
-          <button className="icon-btn"><i className="ri-search-2-line"></i></button>
-          <button className="icon-btn"><i className="ri-layout-grid-line"></i></button>
-          <button className="icon-btn"><i className="ri-more-fill"></i></button>
-        </div>
-        <div className="editor-wrapper" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-          <p style={{ color: "#94a3b8" }}>Select a note to start writing</p>
+        {renderTopBar()}
+        <div className="editor-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center" }}>
+          <div style={{ fontSize: "3rem", color: "#e2e8f0", marginBottom: "16px" }}>
+            <i className="ri-file-edit-line"></i>
+          </div>
+          <h3 style={{ color: "#475569", marginBottom: "8px" }}>Select a note to view</h3>
+          <p style={{ color: "#94a3b8", maxWidth: "300px" }}>Choose a note from the list on the left to start editing or create a new one.</p>
         </div>
       </main>
     );
@@ -41,36 +159,7 @@ export function Editor({ note, onUpdateNote, onDeleteNote }: EditorProps): JSX.E
 
   return (
     <main className="main-content">
-      <div className="top-bar">
-        <button
-          className="icon-btn"
-          style={{ color: note.isFavorite ? "#4f46e5" : "" }}
-          onClick={() => onUpdateNote(note.id, { isFavorite: !note.isFavorite })}
-          title="Favorite"
-        >
-          <i className={note.isFavorite ? "ri-heart-3-fill" : "ri-heart-3-line"}></i>
-        </button>
-        <button
-          className="icon-btn"
-          onClick={() => onUpdateNote(note.id, { isArchived: !note.isArchived })}
-          title={note.isArchived ? "Unarchive" : "Archive"}
-        >
-          <i className={note.isArchived ? "ri-archive-fill" : "ri-archive-line"}></i>
-        </button>
-        {onDeleteNote && (
-          <button
-            className="icon-btn"
-            onClick={() => onDeleteNote(note.id)}
-            title="Delete Permanently"
-          >
-            <i className="ri-delete-bin-line"></i>
-          </button>
-        )}
-        <div style={{ width: "20px" }}></div>
-        <button className="icon-btn"><i className="ri-search-2-line"></i></button>
-        <button className="icon-btn"><i className="ri-layout-grid-line"></i></button>
-        <button className="icon-btn"><i className="ri-more-fill"></i></button>
-      </div>
+      {renderTopBar()}
 
       <div className="editor-wrapper">
         <div className="editor-date">Last edited {formatDate(note.lastEdited)}</div>

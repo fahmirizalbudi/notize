@@ -12,9 +12,10 @@ interface NoteListProps {
   notes: Note[];
   selectedNoteId: string | null;
   onSelectNote: (id: string) => void;
+  viewMode: "comfortable" | "compact";
 }
 
-export function NoteList({ notes, selectedNoteId, onSelectNote }: NoteListProps): JSX.Element {
+export function NoteList({ notes, selectedNoteId, onSelectNote, viewMode }: NoteListProps): JSX.Element {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -27,6 +28,15 @@ export function NoteList({ notes, selectedNoteId, onSelectNote }: NoteListProps)
     return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
   };
 
+  if (notes.length === 0) {
+    return (
+      <div className="no-results">
+        <i className="ri-search-line"></i>
+        <p>No notes found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="note-list-container">
       {notes.map((note) => (
@@ -38,6 +48,7 @@ export function NoteList({ notes, selectedNoteId, onSelectNote }: NoteListProps)
           date={formatDate(note.lastEdited)}
           selected={selectedNoteId === note.id}
           onClick={onSelectNote}
+          viewMode={viewMode}
         />
       ))}
     </div>

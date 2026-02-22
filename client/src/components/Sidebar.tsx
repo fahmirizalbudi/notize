@@ -15,9 +15,10 @@ interface SidebarProps {
   onNewNote: () => void;
   currentFilter: "all" | "favorites" | "archive";
   onFilterChange: (filter: "all" | "favorites" | "archive") => void;
+  viewMode: "comfortable" | "compact";
 }
 
-export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote, currentFilter, onFilterChange }: SidebarProps): JSX.Element {
+export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote, currentFilter, onFilterChange, viewMode }: SidebarProps): JSX.Element {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -62,6 +63,7 @@ export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote, curren
         notes={notes}
         selectedNoteId={selectedNoteId}
         onSelectNote={onSelectNote}
+        viewMode={viewMode}
       />
     </aside>
   );
