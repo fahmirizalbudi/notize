@@ -9,61 +9,102 @@ interface Note {
   lastEdited: number;
 }
 
-const INITIAL_NOTES: Note[] = [
-  {
-    id: "1",
-    title: "UX Consistency Review",
-    body: "We have achieved visual consistency.\n\n1. Sidebar Borders:\nRemoved all borders inside the sidebar (no bottom borders on list items).\nThe only border remaining is the \"border-right\" separating the sidebar from the editor.",
-    lastEdited: Date.now()
-  },
-  {
-    id: "2",
-    title: "Marketing Strategy",
-    body: "Focus on organic growth channels and borderless design language...",
-    lastEdited: Date.now() - 86400000
-  },
-  {
-    id: "3",
-    title: "Shopping List",
-    body: "Milk, Eggs, Coffee beans, Spinach, Apples...",
-    lastEdited: Date.now() - 86400000 * 2
-  }
-];
+const API_BASE_URL = "http://localhost:8000/api";
 
 export function App() {
-  const [notes, setNotes] = useState<Note[]>(() => {
-    const saved = localStorage.getItem("notize-notes");
-    return saved ? JSON.parse(saved) : INITIAL_NOTES;
-  });
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes[0]?.id || null);
-
+  // Fetch all notes
   useEffect(() => {
-    localStorage.setItem("notize-notes", JSON.stringify(notes));
-  }, [notes]);
+    fetch(`${API_BASE_URL}/notes`)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          const formattedNotes = res.data.map((n: any) => ({
+            id: n.id,
+            title: n.title || "",
+            body: n.body || "",
+            lastEdited: new Date(n.last_edited_at || n.updated_at).getTime()
+          }));
+          setNotes(formattedNotes);
+          if (formattedNotes.length > 0 && !selectedNoteId) {
+            setSelectedNoteId(formattedNotes[0].id);
+          }
+        }
+      })
+      .catch((err) => console.error("Failed to fetch notes:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
   const selectedNote = notes.find((n) => n.id === selectedNoteId) || null;
 
   const handleNewNote = () => {
-    const newNote: Note = {
-      id: crypto.randomUUID(),
+    const newId = crypto.randomUUID();
+    const newNoteData = {
+      id: newId,
       title: "",
       body: "",
-      lastEdited: Date.now()
     };
-    setNotes([newNote, ...notes]);
-    setSelectedNoteId(newNote.id);
+
+    fetch(`${API_BASE_URL}/notes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newNoteData),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          const n = res.data;
+          const newNote: Note = {
+            id: n.id,
+            title: n.title || "",
+            body: n.body || "",
+            lastEdited: new Date(n.last_edited_at || n.updated_at).getTime()
+          };
+          setNotes([newNote, ...notes]);
+          setSelectedNoteId(newNote.id);
+        }
+      })
+      .catch((err) => console.error("Failed to create note:", err));
   };
 
   const handleUpdateNote = (id: string, updates: Partial<Note>) => {
+    // Optimistic update
     setNotes((prevNotes) => {
       const updatedNotes = prevNotes.map((note) =>
         note.id === id ? { ...note, ...updates, lastEdited: Date.now() } : note
       );
-      // Sort: Most recently edited at the top
       return [...updatedNotes].sort((a, b) => b.lastEdited - a.lastEdited);
     });
+
+    // API update
+    const laravelUpdates: any = {};
+    if (updates.title !== undefined) laravelUpdates.title = updates.title;
+    if (updates.body !== undefined) laravelUpdates.body = updates.body;
+
+    fetch(`${API_BASE_URL}/notes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(laravelUpdates),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (!res.success) {
+          console.error("Failed to update note on server:", res.message);
+        }
+      })
+      .catch((err) => console.error("Failed to update note:", err));
   };
+
+  if (loading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100vw", height: "100vh" }}>
+        <p>Loading your notes...</p>
+      </div>
+    );
+  }
 
   return (
     <>
