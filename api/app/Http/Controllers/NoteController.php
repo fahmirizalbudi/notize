@@ -2,25 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Note;
-use Illuminate\Http\Request;
+use App\Domain\Note\Models\Note;
+use App\Domain\Note\Repositories\NoteRepository;
+use App\Domain\Note\Actions\UpsertNoteAction;
 use App\Http\Response\ResponseJSON;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
+/**
+ * Class NoteController
+ * 
+ * Interface for note-related API endpoints.
+ * 
+ * @package App\Http\Controllers
+ */
 class NoteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @param NoteRepository $repository
+     * @param UpsertNoteAction $upsertAction
      */
-    public function index()
+    public function __construct(
+        protected NoteRepository $repository,
+        protected UpsertNoteAction $upsertAction
+    ) {}
+
+    /**
+     * Fetch all available notes.
+     * 
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
-        $notes = Note::orderBy('last_edited_at', 'desc')->get();
+        $notes = $this->repository->getAll();
         return ResponseJSON::success('Notes retrieved successfully', $notes);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create a new note.
+     * 
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'id' => 'nullable|uuid',
@@ -30,23 +54,30 @@ class NoteController extends Controller
             'is_archived' => 'nullable|boolean',
         ]);
 
-        $note = Note::create($validated);
+        $note = $this->upsertAction->execute($validated);
 
         return ResponseJSON::success('Note created successfully', $note);
     }
 
     /**
-     * Display the specified resource.
+     * Show a single note.
+     * 
+     * @param Note $note
+     * @return JsonResponse
      */
-    public function show(Note $note)
+    public function show(Note $note): JsonResponse
     {
         return ResponseJSON::success('Note retrieved successfully', $note);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update an existing note.
+     * 
+     * @param Request $request
+     * @param Note $note
+     * @return JsonResponse
      */
-    public function update(Request $request, Note $note)
+    public function update(Request $request, Note $note): JsonResponse
     {
         $validated = $request->validate([
             'title' => 'nullable|string',
@@ -56,21 +87,21 @@ class NoteController extends Controller
             'last_edited_at' => 'nullable|date',
         ]);
 
-        if (!isset($validated['last_edited_at'])) {
-            $validated['last_edited_at'] = now();
-        }
+        $data = array_merge(['id' => $note->id], $validated);
+        $updatedNote = $this->upsertAction->execute($data);
 
-        $note->update($validated);
-
-        return ResponseJSON::success('Note updated successfully', $note);
+        return ResponseJSON::success('Note updated successfully', $updatedNote);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove a note from storage.
+     * 
+     * @param Note $note
+     * @return JsonResponse
      */
-    public function destroy(Note $note)
+    public function destroy(Note $note): JsonResponse
     {
-        $note->delete();
+        $this->repository->delete($note);
         return ResponseJSON::success('Note deleted successfully');
     }
 }

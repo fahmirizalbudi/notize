@@ -1,23 +1,30 @@
 import type { JSX } from "preact";
 import { NoteList } from "./NoteList";
-
-interface Note {
-  id: string;
-  title: string;
-  body: string;
-  lastEdited: number;
-}
+import type { Note, NoteFilter, ViewMode } from "../features/notes/types";
 
 interface SidebarProps {
+  /** Array of notes to display in the list */
   notes: Note[];
+  /** ID of the currently active note */
   selectedNoteId: string | null;
+  /** Callback fired when a note is selected from the list */
   onSelectNote: (id: string) => void;
+  /** Callback to trigger creation of a new note */
   onNewNote: () => void;
-  currentFilter: "all" | "favorites" | "archive";
-  onFilterChange: (filter: "all" | "favorites" | "archive") => void;
-  viewMode: "comfortable" | "compact";
+  /** The currently active category filter */
+  currentFilter: NoteFilter;
+  /** Callback to change the active filter */
+  onFilterChange: (filter: NoteFilter) => void;
+  /** The current visual density of the list */
+  viewMode: ViewMode;
 }
 
+/**
+ * Sidebar component containing navigation and the notes list.
+ * 
+ * @param props - Component properties
+ * @returns JSX.Element
+ */
 export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote, currentFilter, onFilterChange, viewMode }: SidebarProps): JSX.Element {
   return (
     <aside className="sidebar">

@@ -1,20 +1,31 @@
 <?php
 
-namespace App\Models;
+namespace App\Domain\Note\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * Class Note
+ * 
+ * Represents a user's note entity in the system.
+ * 
+ * @package App\Domain\Note\Models
+ * @property string $id Unique identifier (UUID)
+ * @property string|null $title The title of the note
+ * @property string|null $body The content of the note
+ * @property bool $is_favorite Whether the note is marked as favorite
+ * @property bool $is_archived Whether the note is archived
+ * @property \Illuminate\Support\Carbon|null $last_edited_at Last timestamp the note was modified
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Note extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    /** @var array<int, string> */
     protected $fillable = [
         'id',
         'title',
@@ -24,40 +35,24 @@ class Note extends Model
         'last_edited_at',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
+    /** @var array<string, string> */
     protected $casts = [
         'is_favorite' => 'boolean',
         'is_archived' => 'boolean',
         'last_edited_at' => 'datetime',
     ];
 
-    /**
-     * The "type" of the primary key ID.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $keyType = 'string';
 
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
+    /** @var bool */
     public $incrementing = false;
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [];
-
-    /**
-     * Boot function from Laravel.
+     * Bootstrap the model and its traits.
+     * Generates UUID and default timestamp on creation.
+     * 
+     * @return void
      */
     protected static function boot()
     {

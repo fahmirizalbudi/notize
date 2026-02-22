@@ -1,20 +1,25 @@
 import type { JSX } from "preact";
 import { NoteItem } from "./NoteItem";
-
-interface Note {
-  id: string;
-  title: string;
-  body: string;
-  lastEdited: number;
-}
+import type { Note, ViewMode } from "../features/notes/types";
 
 interface NoteListProps {
+  /** Array of notes to render */
   notes: Note[];
+  /** ID of the selected note for highlighting */
   selectedNoteId: string | null;
+  /** Callback fired when a note item is clicked */
   onSelectNote: (id: string) => void;
-  viewMode: "comfortable" | "compact";
+  /** Visual density of the note items */
+  viewMode: ViewMode;
 }
 
+/**
+ * Renders a scrollable list of note previews.
+ * Displays an empty state if no notes are provided.
+ * 
+ * @param props - Component properties
+ * @returns JSX.Element
+ */
 export function NoteList({ notes, selectedNoteId, onSelectNote, viewMode }: NoteListProps): JSX.Element {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);

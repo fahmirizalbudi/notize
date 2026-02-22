@@ -20,26 +20,24 @@ body {
   height: 100%;
 }
 
-/* --- SIDEBAR --- */
 .sidebar {
   width: 340px;
   background-color: #ffffff;
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(0, 0, 0, 0.045); /* The ONLY sidebar border */
+  border-right: 1px solid rgba(0, 0, 0, 0.045);
   flex-shrink: 0;
   padding: 24px 22px;
 }
 
-/* Sidebar Header */
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
   padding: 0 12px;
-  height: 44px; /* Hardcoded height */
+  height: 44px;
 }
 
 .brand-icon {
@@ -54,16 +52,14 @@ body {
   letter-spacing: -0.5px;
 }
 
-/* --- CONSISTENT BUTTON & MENU SYSTEM --- */
-/* Shared class for alignment */
 .ui-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 44px; /* Hardcoded height */
+  height: 44px;
   padding: 0 16px;
-  border-radius: 8px; /* Hardcoded radius */
-  font-size: 0.9rem; /* Hardcoded font size */
+  border-radius: 8px;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
@@ -73,13 +69,12 @@ body {
 }
 
 .ui-item i {
-  font-size: 1.25rem; /* Hardcoded icon size */
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Primary Action Button (New Note) */
 .btn-new {
   background-color: #4f46e5;
   color: white;
@@ -93,7 +88,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* Menu Items */
 .menu-list {
   display: flex;
   flex-direction: column;
@@ -116,7 +110,6 @@ body {
   color: #4f46e5;
 }
 
-/* --- NOTE LIST (Borderless) --- */
 .note-list-container {
   flex: 1;
   overflow-y: auto;
@@ -191,25 +184,12 @@ body {
   margin-top: 2px;
 }
 
-.search-input:focus {
-  background: #eef2ff;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
-}
-
-.no-results {
-  padding: 40px 20px;
-  text-align: center;
+.note-date {
+  font-size: 0.75rem;
   color: #94a3b8;
-  font-size: 0.9rem;
+  margin-top: 6px;
 }
 
-.no-results i {
-  font-size: 2rem;
-  margin-bottom: 12px;
-  display: block;
-}
-
-/* --- MAIN AREA --- */
 .main-content {
   flex: 1;
   display: flex;
@@ -257,6 +237,24 @@ body {
   color: #94a3b8;
 }
 
+.search-input:focus {
+  background: #eef2ff;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.no-results {
+  padding: 40px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.no-results i {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
 .icon-btn {
   width: 40px;
   height: 40px;
@@ -302,6 +300,16 @@ body {
   margin-bottom: 24px;
   line-height: 1.2;
   background: transparent;
+  resize: none;
+  display: block;
+  overflow: hidden;
+  height: auto;
+  min-height: 44px;
+  padding: 0;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .editor-title::placeholder {
@@ -321,7 +329,6 @@ body {
   background: transparent;
 }
 
-/* --- LOADER --- */
 .loader-container {
   display: flex;
   align-items: center;
@@ -344,7 +351,6 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* --- DIALOG / MODAL --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -426,7 +432,6 @@ body {
   opacity: 0.9;
 }
 
-/* --- DROPDOWN --- */
 .dropdown-container {
   position: relative;
   display: inline-block;
@@ -468,7 +473,7 @@ body {
   background: transparent;
   font-family: inherit;
   transition: all 0.15s ease;
-  white-space: nowrap; /* No wrap requested */
+  white-space: nowrap;
 }
 
 .dropdown-item:hover {

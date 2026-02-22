@@ -1,13 +1,24 @@
 import type { JSX } from "preact";
 
 interface ConfirmDialogProps {
+  /** Controls visibility of the modal */
   isOpen: boolean;
+  /** Bold text shown at the top */
   title: string;
+  /** Explanatory text for the action */
   message: string;
+  /** Callback fired when the primary action is clicked */
   onConfirm: () => void;
+  /** Callback fired when the user dismisses the dialog */
   onCancel: () => void;
 }
 
+/**
+ * A reusable modal dialog for critical confirmations.
+ * 
+ * @param props - Component properties
+ * @returns JSX.Element | null
+ */
 export function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel }: ConfirmDialogProps): JSX.Element | null {
   if (!isOpen) return null;
 

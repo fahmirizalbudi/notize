@@ -1,25 +1,31 @@
 import type { JSX } from "preact";
 import { useState, useEffect, useRef } from "preact/hooks";
-
-interface Note {
-  id: string;
-  title: string;
-  body: string;
-  isFavorite: boolean;
-  isArchived: boolean;
-  lastEdited: number;
-}
+import type { Note } from "../features/notes/types";
 
 interface EditorProps {
+  /** The currently selected note object or null if none */
   note: Note | null;
+  /** Callback to update note properties */
   onUpdateNote: (id: string, updates: Partial<Note>) => void;
+  /** Callback to trigger note deletion dialog */
   onDeleteNote?: (id: string) => void;
+  /** Current search query for filtering */
   searchQuery: string;
+  /** Callback to update the search query */
   onSearchChange: (query: string) => void;
+  /** Visual density mode of the application */
   viewMode: "comfortable" | "compact";
+  /** Callback to toggle between view modes */
   onViewModeChange: () => void;
 }
 
+/**
+ * Main editor component for viewing and modifying note content.
+ * Includes search functionality, view mode toggling, and management actions.
+ * 
+ * @param props - Component properties
+ * @returns JSX.Element
+ */
 export function Editor({ 
   note, onUpdateNote, onDeleteNote, searchQuery, onSearchChange, viewMode, onViewModeChange 
 }: EditorProps): JSX.Element {
@@ -27,6 +33,7 @@ export function Editor({
   const [isSearchVisible, setIsSearchVisible] = useState(!!searchQuery);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const titleRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isSearchVisible && searchInputRef.current) {
@@ -48,6 +55,29 @@ export function Editor({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isDropdownOpen]);
+
+  /**
+   * Robust auto-resize for the title textarea.
+   * Resets height to auto to get the correct scrollHeight, then applies it.
+   */
+  const handleTitleInput = (e: JSX.TargetedEvent<HTMLTextAreaElement, Event>) => {
+    const target = e.currentTarget;
+    const value = target.value;
+    
+    // Synchronous height adjustment before state update
+    target.style.height = "auto";
+    target.style.height = `${target.scrollHeight}px`;
+    
+    onUpdateNote(note!.id, { title: value });
+  };
+
+  useEffect(() => {
+    // Initial resize and resize when switching notes
+    if (titleRef.current) {
+      titleRef.current.style.height = "auto";
+      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`;
+    }
+  }, [note?.id]);
 
   const toggleSearch = () => {
     if (isSearchVisible) {
@@ -163,12 +193,13 @@ export function Editor({
 
       <div className="editor-wrapper">
         <div className="editor-date">Last edited {formatDate(note.lastEdited)}</div>
-        <input
-          type="text"
+        <textarea
+          ref={titleRef}
           className="editor-title"
           placeholder="Note Title"
           value={note.title}
-          onInput={(e) => onUpdateNote(note.id, { title: (e.target as HTMLInputElement).value })}
+          onInput={handleTitleInput}
+          rows={1}
         />
         <textarea
           className="editor-body"
