@@ -1,0 +1,267 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #ffffff;
+  color: #334155;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+}
+
+#app {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  width: 340px;
+  background-color: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(0, 0, 0, 0.045); /* The ONLY sidebar border */
+  flex-shrink: 0;
+  padding: 24px 22px;
+}
+
+/* Sidebar Header */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 0 12px;
+  height: 44px; /* Hardcoded height */
+}
+
+.brand-icon {
+  color: #4f46e5;
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+/* --- CONSISTENT BUTTON & MENU SYSTEM --- */
+/* Shared class for alignment */
+.ui-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px; /* Hardcoded height */
+  padding: 0 16px;
+  border-radius: 8px; /* Hardcoded radius */
+  font-size: 0.9rem; /* Hardcoded font size */
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  font-family: inherit;
+}
+
+.ui-item i {
+  font-size: 1.25rem; /* Hardcoded icon size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Primary Action Button (New Note) */
+.btn-new {
+  background-color: #4f46e5;
+  color: white;
+  width: 100%;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.btn-new:hover {
+  background-color: #4338ca;
+  transform: translateY(-1px);
+}
+
+/* Menu Items */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.menu-item {
+  color: #64748b;
+  background: transparent;
+}
+
+.menu-item:hover {
+  background-color: #f8fafc;
+  color: #334155;
+}
+
+.menu-item.active {
+  background-color: #eef2ff;
+  color: #4f46e5;
+}
+
+/* --- NOTE LIST (Borderless) --- */
+.note-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.note-list-container::-webkit-scrollbar {
+  width: 0;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 0 12px;
+  margin-bottom: 8px;
+}
+
+.note-item {
+  padding: 16px 16px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.note-item:hover {
+  background-color: #f8fafc;
+}
+
+.note-item.selected {
+  background-color: #f1f5f9;
+}
+
+.note-item.selected .note-title {
+  color: #4f46e5;
+}
+
+.note-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+.note-preview {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 6px;
+}
+
+/* --- MAIN AREA --- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  position: relative;
+}
+
+.top-bar {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 40px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.icon-btn:hover {
+  background-color: #f8fafc;
+  color: #334155;
+}
+
+.editor-wrapper {
+  flex: 1;
+  padding: 0 60px 40px 60px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.editor-date {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.editor-title {
+  width: 100%;
+  border: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 24px;
+  line-height: 1.2;
+  background: transparent;
+}
+
+.editor-title::placeholder {
+  color: #cbd5e1;
+}
+
+.editor-body {
+  width: 100%;
+  height: calc(100% - 150px);
+  border: none;
+  resize: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: #334155;
+  line-height: 1.8;
+  background: transparent;
+}
