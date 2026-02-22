@@ -29,7 +29,7 @@ export function Sidebar({ notes, selectedNoteId, onSelectNote, onNewNote, curren
   return (
     <aside className="sidebar">
       <div className="brand">
-        <i className="ri-book-mark-fill brand-icon"></i>
+        <img src="/notize-logo.svg" alt="Notize Logo" className="brand-icon" style={{ width: "24px", height: "24px" }} />
         <span className="brand-text">Notize</span>
       </div>
 
